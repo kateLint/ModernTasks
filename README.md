@@ -90,8 +90,6 @@ git clone https://github.com/YourUsername/ModernTasks.git
 
 ## 📱 Screenshots
 
-## 📱 Screenshots
-
 <p align="center">
   <img src="screenshots/main_list.png" width="250" alt="Home" />
   <img src="screenshots/add_task.png" width="250" alt="Detail" />
