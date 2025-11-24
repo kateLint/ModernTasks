@@ -31,26 +31,15 @@ import com.keren.moderntasks.ui.components.AddTodoFab
 import com.keren.moderntasks.ui.components.TodoList
 import com.keren.moderntasks.ui.theme.ModernTasksTheme
 
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        val db = Room.databaseBuilder(
-            applicationContext,
-            TodoDatabase::class.java, "todo-database"
-        ).build()
-        
-        val repository = TodoRepository(db.todoDao())
-        
-        val viewModelFactory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(TodoViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
-                    return TodoViewModel(repository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
+
 
         setContent {
             ModernTasksTheme {
@@ -58,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ModernTasksApp(viewModelFactory = viewModelFactory)
+                    ModernTasksApp()
                 }
             }
         }
@@ -67,8 +56,8 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModernTasksApp(viewModelFactory: ViewModelProvider.Factory) {
-    val viewModel: TodoViewModel = viewModel(factory = viewModelFactory)
+fun ModernTasksApp() {
+    val viewModel: TodoViewModel = hiltViewModel()
     val todoItems by viewModel.todoItems.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 

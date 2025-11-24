@@ -1,31 +1,41 @@
 # Modern Tasks - Walkthrough
 
-## Day 3: Input & Deletion (Current)
+## Day 4: Dependency Injection (Current)
 ### Accomplishments
-- **Add Task Dialog**: Created a beautiful `AddTodoDialog` to input real task titles and descriptions.
-- **Delete Functionality**: Added a "Trash" icon to each task row to allow deletion.
-- **Integration**: Connected the new UI components to the `TodoViewModel` and `Room` database.
+- **Hilt Integration**: Migrated the app to use Hilt for Dependency Injection.
+- **Refactoring**:
+    - Created `ModernTasksApplication` (`@HiltAndroidApp`).
+    - Created `AppModule` to provide Database and Repository.
+    - Annotated `TodoViewModel` with `@HiltViewModel`.
+    - Annotated `MainActivity` with `@AndroidEntryPoint`.
+- **Cleanup**: Removed manual dependency wiring from `MainActivity`.
 
 ### Verification Results
 - **Build**: `./gradlew assembleDebug` passed.
 - **Manual Test**:
-    1.  Click the FAB (+).
-    2.  Enter "Buy Milk" and "2% Fat".
-    3.  Click "Add". -> **Verify**: Task appears.
-    4.  Click the Trash icon. -> **Verify**: Task disappears.
+    1.  Run the app.
+    2.  **Verify**: Existing tasks load correctly (Database injection works).
+    3.  Add a task.
+    4.  **Verify**: Task is added (Repository injection works).
+
+---
+
+## Day 3: Input & Deletion
+### Accomplishments
+- **Add Task Dialog**: Created a beautiful `AddTodoDialog`.
+- **Delete Functionality**: Added a "Trash" icon to each task row.
+- **Integration**: Connected UI to ViewModel and Room.
 
 ---
 
 ## Day 2: Architecture & Persistence
 ### Accomplishments
-- **Room Database**: Implemented local storage with `TodoDatabase`, `TodoDao`, and `TodoEntity`.
-- **MVVM Architecture**: Introduced `TodoViewModel` and `TodoRepository` to separate UI from Data.
-- **Dependencies**: Added Room and KSP support.
+- **Room Database**: Implemented local storage.
+- **MVVM Architecture**: Introduced `TodoViewModel` and `TodoRepository`.
 
 ---
 
 ## Day 1: UI & Setup
 ### Accomplishments
-- **Project Setup**: Configured Android Studio project with Jetpack Compose, Material3, and Kotlin DSL.
-- **Architecture**: Established a clean package structure.
-- **Implementation**: Created responsive ToDo list UI, FAB, and "Mark as Done" functionality.
+- **Project Setup**: Configured Android Studio project with Jetpack Compose.
+- **Implementation**: Created responsive ToDo list UI.

@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TodoViewModel(private val repository: TodoRepository) : ViewModel() {
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class TodoViewModel @Inject constructor(private val repository: TodoRepository) : ViewModel() {
     val todoItems: StateFlow<List<TodoItem>> = repository.allTodos
         .stateIn(
             scope = viewModelScope,
