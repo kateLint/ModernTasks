@@ -90,12 +90,9 @@ git clone https://github.com/YourUsername/ModernTasks.git
 
 ## 📱 Screenshots
 
-> Add screenshots here showcasing:
-> - Main task list
-> - Add/Edit dialog
-> - Empty state
-> - Swipe to delete
-> - Sort menu
+![Main task list](screenshots/main_list.png)
+![Add / Edit task](screenshots/add_task.png)
+![Empty state](screenshots/empty_state.png)
 
 ## 🎯 Key Learnings
 
