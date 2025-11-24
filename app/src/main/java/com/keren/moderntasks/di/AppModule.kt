@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.keren.moderntasks.data.TodoDao
 import com.keren.moderntasks.data.TodoDatabase
 import com.keren.moderntasks.data.TodoRepository
+import com.keren.moderntasks.data.TodoRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,6 +38,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideTodoRepository(todoDao: TodoDao): TodoRepository {
-        return TodoRepository(todoDao)
+        return TodoRepositoryImpl(todoDao)
     }
 }
