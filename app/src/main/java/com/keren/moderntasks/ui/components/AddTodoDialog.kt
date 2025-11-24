@@ -16,19 +16,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.keren.moderntasks.model.TodoItem
 
 @Composable
 fun AddTodoDialog(
+    item: TodoItem? = null,
     onDismiss: () -> Unit,
     onConfirm: (String, String) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(item?.title ?: "") }
+    var description by remember { mutableStateOf(item?.description ?: "") }
     var isTitleError by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Add New Task") },
+        title = { Text(text = if (item == null) "Add New Task" else "Edit Task") },
         text = {
             Column {
                 OutlinedTextField(
@@ -69,7 +71,7 @@ fun AddTodoDialog(
                     }
                 }
             ) {
-                Text("Add")
+                Text(if (item == null) "Add" else "Save")
             }
         },
         dismissButton = {

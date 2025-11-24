@@ -26,8 +26,11 @@ import androidx.room.Room
 import com.keren.moderntasks.data.TodoDatabase
 import com.keren.moderntasks.data.TodoRepository
 import com.keren.moderntasks.ui.TodoViewModel
+import com.keren.moderntasks.model.TodoItem
 import com.keren.moderntasks.ui.components.AddTodoDialog
 import com.keren.moderntasks.ui.components.AddTodoFab
+import com.keren.moderntasks.ui.components.EmptyState
+import com.keren.moderntasks.ui.components.SortMenu
 import com.keren.moderntasks.ui.components.TodoList
 import com.keren.moderntasks.ui.theme.ModernTasksTheme
 
@@ -59,14 +62,25 @@ class MainActivity : ComponentActivity() {
 fun ModernTasksApp() {
     val viewModel: TodoViewModel = hiltViewModel()
     val todoItems by viewModel.todoItems.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var editingItem by remember { mutableStateOf<TodoItem?>(null) }
 
     if (showDialog) {
         AddTodoDialog(
-            onDismiss = { showDialog = false },
+            item = editingItem,
+            onDismiss = { 
+                showDialog = false 
+                editingItem = null
+            },
             onConfirm = { title, description ->
-                viewModel.addTodo(title, description)
+                if (editingItem == null) {
+                    viewModel.addTodo(title, description)
+                } else {
+                    viewModel.updateTodo(editingItem!!.copy(title = title, description = description))
+                }
                 showDialog = false
+                editingItem = null
             }
         )
     }
@@ -75,6 +89,12 @@ fun ModernTasksApp() {
         topBar = {
             TopAppBar(
                 title = { Text("Modern Tasks") },
+                actions = {
+                    SortMenu(
+                        currentSort = sortOrder,
+                        onSortSelected = { viewModel.setSortOrder(it) }
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -83,22 +103,31 @@ fun ModernTasksApp() {
         },
         floatingActionButton = {
             AddTodoFab(onClick = {
+                editingItem = null
                 showDialog = true
             })
         }
     ) { innerPadding ->
-        TodoList(
-            items = todoItems,
-            onItemClick = { item ->
-                viewModel.toggleCompletion(item)
-            },
-            onItemCheckedChange = { item, _ ->
-                viewModel.toggleCompletion(item)
-            },
-            onDeleteClick = { item ->
-                viewModel.deleteTodo(item)
-            },
-            modifier = Modifier.padding(innerPadding)
-        )
+        if (todoItems.isEmpty()) {
+            EmptyState(modifier = Modifier.padding(innerPadding))
+        } else {
+            TodoList(
+                items = todoItems,
+                onItemClick = { item ->
+                    editingItem = item
+                    showDialog = true
+                },
+                onItemCheckedChange = { item, _ ->
+                    viewModel.toggleCompletion(item)
+                },
+                onDeleteClick = { item ->
+                    viewModel.deleteTodo(item)
+                },
+                onReorder = { fromIndex, toIndex ->
+                    viewModel.reorderTasks(fromIndex, toIndex)
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.keren.moderntasks.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,13 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.keren.moderntasks.model.TodoItem
+import kotlinx.coroutines.delay
 
 @Composable
 fun TodoItemRow(
@@ -34,9 +42,17 @@ fun TodoItemRow(
     onCheckedChange: (TodoItem, Boolean) -> Unit,
     onDeleteClick: (TodoItem) -> Unit
 ) {
+    var visible by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(item.id) {
+        delay(50)
+        visible = true
+    }
+
     val cardBackgroundColor by animateColorAsState(
         targetValue = if (item.isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface,
-        label = "cardBackground"
+        label = "cardBackground",
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
     )
 
     val textColor by animateColorAsState(
@@ -48,6 +64,7 @@ fun TodoItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
+            .scale(if (visible) 1f else 0.8f)
             .clickable { onItemClick(item) },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = cardBackgroundColor),
