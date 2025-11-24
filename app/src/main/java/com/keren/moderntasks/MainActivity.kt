@@ -13,11 +13,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.keren.moderntasks.model.TodoItem
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Room
+import com.keren.moderntasks.data.TodoDatabase
+import com.keren.moderntasks.data.TodoRepository
+import com.keren.moderntasks.ui.TodoViewModel
+import com.keren.moderntasks.ui.components.AddTodoDialog
 import com.keren.moderntasks.ui.components.AddTodoFab
 import com.keren.moderntasks.ui.components.TodoList
 import com.keren.moderntasks.ui.theme.ModernTasksTheme
@@ -25,14 +34,31 @@ import com.keren.moderntasks.ui.theme.ModernTasksTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val db = Room.databaseBuilder(
+            applicationContext,
+            TodoDatabase::class.java, "todo-database"
+        ).build()
+        
+        val repository = TodoRepository(db.todoDao())
+        
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(TodoViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return TodoViewModel(repository) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+
         setContent {
             ModernTasksTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ModernTasksApp()
+                    ModernTasksApp(viewModelFactory = viewModelFactory)
                 }
             }
         }
@@ -41,14 +67,18 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModernTasksApp() {
-    // Dummy data state
-    val todoItems = remember {
-        mutableStateListOf(
-            TodoItem(title = "Learn Jetpack Compose", description = "Master the basics of Compose UI"),
-            TodoItem(title = "Build Modern Tasks App", description = "Create a beautiful ToDo app", isCompleted = true),
-            TodoItem(title = "Setup GitHub Profile", description = "Polish the profile for recruiters"),
-            TodoItem(title = "Buy Groceries", description = "Milk, Eggs, Bread")
+fun ModernTasksApp(viewModelFactory: ViewModelProvider.Factory) {
+    val viewModel: TodoViewModel = viewModel(factory = viewModelFactory)
+    val todoItems by viewModel.todoItems.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AddTodoDialog(
+            onDismiss = { showDialog = false },
+            onConfirm = { title, description ->
+                viewModel.addTodo(title, description)
+                showDialog = false
+            }
         )
     }
 
@@ -64,24 +94,20 @@ fun ModernTasksApp() {
         },
         floatingActionButton = {
             AddTodoFab(onClick = {
-                todoItems.add(0, TodoItem(title = "New Task ${todoItems.size + 1}", description = "Description for new task"))
+                showDialog = true
             })
         }
     ) { innerPadding ->
         TodoList(
             items = todoItems,
             onItemClick = { item ->
-                // Toggle completion on click for now
-                val index = todoItems.indexOf(item)
-                if (index != -1) {
-                    todoItems[index] = item.copy(isCompleted = !item.isCompleted)
-                }
+                viewModel.toggleCompletion(item)
             },
-            onItemCheckedChange = { item, isChecked ->
-                val index = todoItems.indexOf(item)
-                if (index != -1) {
-                    todoItems[index] = item.copy(isCompleted = isChecked)
-                }
+            onItemCheckedChange = { item, _ ->
+                viewModel.toggleCompletion(item)
+            },
+            onDeleteClick = { item ->
+                viewModel.deleteTodo(item)
             },
             modifier = Modifier.padding(innerPadding)
         )

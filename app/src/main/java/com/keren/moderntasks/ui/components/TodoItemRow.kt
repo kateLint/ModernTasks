@@ -12,8 +12,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,7 +31,8 @@ import com.keren.moderntasks.model.TodoItem
 fun TodoItemRow(
     item: TodoItem,
     onItemClick: (TodoItem) -> Unit,
-    onCheckedChange: (TodoItem, Boolean) -> Unit
+    onCheckedChange: (TodoItem, Boolean) -> Unit,
+    onDeleteClick: (TodoItem) -> Unit
 ) {
     val cardBackgroundColor by animateColorAsState(
         targetValue = if (item.isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface,
@@ -78,6 +83,13 @@ fun TodoItemRow(
                 checked = item.isCompleted,
                 onCheckedChange = { onCheckedChange(item, it) }
             )
+            IconButton(onClick = { onDeleteClick(item) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Task",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ fun TodoList(
     items: List<TodoItem>,
     onItemClick: (TodoItem) -> Unit,
     onItemCheckedChange: (TodoItem, Boolean) -> Unit,
+    onDeleteClick: (TodoItem) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -25,7 +26,8 @@ fun TodoList(
             TodoItemRow(
                 item = item,
                 onItemClick = onItemClick,
-                onCheckedChange = onItemCheckedChange
+                onCheckedChange = onItemCheckedChange,
+                onDeleteClick = onDeleteClick
             )
         }
     }
