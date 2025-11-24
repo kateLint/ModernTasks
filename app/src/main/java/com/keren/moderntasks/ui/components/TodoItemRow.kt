@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,7 +41,8 @@ fun TodoItemRow(
     item: TodoItem,
     onItemClick: (TodoItem) -> Unit,
     onCheckedChange: (TodoItem, Boolean) -> Unit,
-    onDeleteClick: (TodoItem) -> Unit
+    onDeleteClick: (TodoItem) -> Unit,
+    dragHandleModifier: Modifier = Modifier
 ) {
     var visible by remember { mutableStateOf(false) }
     
@@ -77,6 +79,12 @@ fun TodoItemRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = "Drag to reorder",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = dragHandleModifier.padding(end = 8.dp)
+            )
             Column(
                 modifier = Modifier.weight(1f)
             ) {

@@ -67,14 +67,10 @@ class TodoViewModel @Inject constructor(private val repository: TodoRepository) 
         }
     }
 
-    fun reorderTasks(fromIndex: Int, toIndex: Int) {
+    fun updateOrder(items: List<TodoItem>) {
         viewModelScope.launch {
-            val currentList = todoItems.value.toMutableList()
-            val movedItem = currentList.removeAt(fromIndex)
-            currentList.add(toIndex, movedItem)
-            
             // Update order for all items
-            currentList.forEachIndexed { index, item ->
+            items.forEachIndexed { index, item ->
                 repository.update(item.copy(order = index))
             }
             

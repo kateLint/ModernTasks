@@ -19,9 +19,13 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.keren.moderntasks.model.TodoItem
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,59 +44,43 @@ fun TodoList(
     onItemClick: (TodoItem) -> Unit,
     onItemCheckedChange: (TodoItem, Boolean) -> Unit,
     onDeleteClick: (TodoItem) -> Unit,
-    onReorder: (Int, Int) -> Unit,
+    onReorderFinished: (List<TodoItem>) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
+    val localItems = remember { mutableStateListOf<TodoItem>() }
     var draggedIndex by remember { mutableStateOf<Int?>(null) }
-    var targetIndex by remember { mutableStateOf<Int?>(null) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
+
+    // Sync local items with source of truth when not dragging
+    LaunchedEffect(items) {
+        if (draggedIndex == null) {
+            localItems.clear()
+            localItems.addAll(items)
+        }
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = contentPadding
     ) {
-        itemsIndexed(items = items, key = { _, item -> item.id }) { index, item ->
+        itemsIndexed(items = localItems, key = { _, item -> item.id }) { index, item ->
             val isDragging = draggedIndex == index
-            val isTarget = targetIndex == index
+            val displacement = if (isDragging) dragOffset else 0f
+            val currentIndex by rememberUpdatedState(index)
+            val currentOnReorderFinished by rememberUpdatedState(onReorderFinished)
 
             Box(
                 modifier = Modifier
                     .zIndex(if (isDragging) 1f else 0f)
                     .graphicsLayer {
-                        alpha = if (isDragging) 0.7f else 1f
-                        scaleX = if (isTarget) 1.05f else 1f
-                        scaleY = if (isTarget) 1.05f else 1f
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(
-                            onDragStart = {
-                                draggedIndex = index
-                            },
-                            onDrag = { change, _ ->
-                                change.consume()
-                                // Calculate target index based on drag position
-                                val newTargetIndex = (change.position.y / size.height).toInt()
-                                    .coerceIn(0, items.size - 1)
-                                if (newTargetIndex != targetIndex) {
-                                    targetIndex = newTargetIndex
-                                }
-                            },
-                            onDragEnd = {
-                                draggedIndex?.let { from ->
-                                    targetIndex?.let { to ->
-                                        if (from != to) {
-                                            onReorder(from, to)
-                                        }
-                                    }
-                                }
-                                draggedIndex = null
-                                targetIndex = null
-                            },
-                            onDragCancel = {
-                                draggedIndex = null
-                                targetIndex = null
-                            }
-                        )
+                        translationY = displacement
+                        if (isDragging) {
+                            scaleX = 1.05f
+                            scaleY = 1.05f
+                            alpha = 0.9f
+                            shadowElevation = 8.dp.toPx()
+                        }
                     }
             ) {
                 val dismissState = rememberSwipeToDismissBoxState(
@@ -140,7 +129,49 @@ fun TodoList(
                         item = item,
                         onItemClick = onItemClick,
                         onCheckedChange = onItemCheckedChange,
-                        onDeleteClick = onDeleteClick
+                        onDeleteClick = onDeleteClick,
+                        dragHandleModifier = Modifier.pointerInput(Unit) {
+                            detectDragGesturesAfterLongPress(
+                                onDragStart = {
+                                    draggedIndex = currentIndex
+                                    dragOffset = 0f
+                                },
+                                onDrag = { change, dragAmount ->
+                                    change.consume()
+                                    dragOffset += dragAmount.y
+                                    
+                                    val currentDraggedIndex = draggedIndex ?: return@detectDragGesturesAfterLongPress
+                                    val itemHeight = 80.dp.toPx() // Approximate item height
+                                    
+                                    // Calculate target index
+                                    val targetIndex = (currentDraggedIndex + (dragOffset / itemHeight).roundToInt())
+                                        .coerceIn(0, localItems.size - 1)
+                                        
+                                    if (targetIndex != currentDraggedIndex) {
+                                        // Swap items in local list
+                                        val movedItem = localItems.removeAt(currentDraggedIndex)
+                                        localItems.add(targetIndex, movedItem)
+                                        
+                                        // Update state
+                                        draggedIndex = targetIndex
+                                        // Adjust offset to account for the swap so the item stays under the finger
+                                        dragOffset -= (targetIndex - currentDraggedIndex) * itemHeight
+                                    }
+                                },
+                                onDragEnd = {
+                                    draggedIndex = null
+                                    dragOffset = 0f
+                                    currentOnReorderFinished(localItems.toList())
+                                },
+                                onDragCancel = {
+                                    draggedIndex = null
+                                    dragOffset = 0f
+                                    // Revert to original items
+                                    localItems.clear()
+                                    localItems.addAll(items)
+                                }
+                            )
+                        }
                     )
                 }
             }

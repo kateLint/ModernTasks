@@ -123,8 +123,8 @@ fun ModernTasksApp() {
                 onDeleteClick = { item ->
                     viewModel.deleteTodo(item)
                 },
-                onReorder = { fromIndex, toIndex ->
-                    viewModel.reorderTasks(fromIndex, toIndex)
+                onReorderFinished = { items ->
+                    viewModel.updateOrder(items)
                 },
                 modifier = Modifier.padding(innerPadding)
             )
