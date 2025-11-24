@@ -1,0 +1,46 @@
+# Implementation Plan - Modern Tasks (Day 1)
+
+**Goal:** Create a modern, beautiful ToDo app using Jetpack Compose to master the basics of Android UI 2025.
+
+## User Review Required
+> [!IMPORTANT]
+> **Project Creation**: Since Android projects require complex Gradle setups and binary wrappers, **you must create the base project in Android Studio first**.
+> I will then generate the Kotlin source files and resources.
+
+## Proposed Changes
+
+### Project Setup (User Action)
+1.  Open Android Studio.
+2.  New Project -> **Empty Activity**.
+3.  Name: `ModernTasks`
+4.  Package: `com.kerenlint.moderntasks` (or similar, please confirm).
+5.  Language: **Kotlin**.
+6.  Build Configuration: **Kotlin DSL (build.gradle.kts)**.
+
+### Code Structure (I will generate these)
+We will adopt a clean package structure from Day 1.
+
+#### [NEW] `ui/theme`
+- `Color.kt`: Define a modern, vibrant color palette (not default purple).
+- `Type.kt`: Modern typography.
+- `Theme.kt`: Dark/Light mode support.
+
+#### [NEW] `model`
+- `TodoItem.kt`: Data class for a task.
+
+#### [NEW] `ui/components`
+- `TodoItemRow.kt`: A beautiful composable for a single list item.
+- `TodoList.kt`: LazyColumn for the list.
+- `AddTodoFab.kt`: Floating Action Button with animation.
+
+#### [MODIFY] `MainActivity.kt`
+- Set up the main `Scaffold`.
+- Integrate the components.
+
+## Verification Plan
+
+### Manual Verification
+1.  Build and Run the app in Android Emulator.
+2.  Verify the "Hello World" is gone and replaced by our custom UI.
+3.  Check that the FAB (Floating Action Button) is visible.
+4.  Check that the list displays dummy data correctly.

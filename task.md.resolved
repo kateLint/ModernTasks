@@ -1,0 +1,29 @@
+# Project Tasks
+
+- [/] Phase 0: Immediate Preparation <!-- id: 0 -->
+    - [x] Install Android Studio Koala 2025+ <!-- id: 1 -->
+    - [x] Set up Cursor.sh IDE <!-- id: 2 -->
+    - [x] Create GitHub profile (YourName-MobileAI) <!-- id: 3 -->
+    - [ ] Update LinkedIn Headline <!-- id: 4 -->
+    - [ ] Set up Notion Board <!-- id: 5 -->
+    - [x] Create Google AI Studio account (Gemini API Key) <!-- id: 6 -->
+- [/] Phase 1: Modern Android + Python/ML Basics (Weeks 1-6) <!-- id: 7 -->
+    - [/] Weeks 1-2: Kotlin Deep Dive + Jetpack Compose (Project: Modern Tasks) <!-- id: 8 -->
+    - [ ] Week 3: Python Basics + NumPy/Pandas <!-- id: 9 -->
+    - [ ] Week 4: Clean Architecture (MVVM, Hilt, Room, Flow) <!-- id: 10 -->
+    - [ ] Weeks 5-6: Intro to ML + TFLite + MediaPipe (Project: Smart Yoga Pose Corrector) <!-- id: 11 -->
+    - [ ] Phase 1 Publication (GitHub, LinkedIn) <!-- id: 12 -->
+- [ ] Phase 2: Deep Mobile AI + GenAI (Weeks 7-20) <!-- id: 13 -->
+    - [ ] Weeks 7-18: Smart Sketchbook 2025 (Core Project) <!-- id: 14 -->
+    - [ ] Weeks 19-20: AI Journal + Improv Chef <!-- id: 15 -->
+    - [ ] Weeks 21-22: AI Voice Painter (Bonus) <!-- id: 16 -->
+- [ ] Phase 3: Backend, MLOps & Production (Weeks 23-32) <!-- id: 17 -->
+    - [ ] Weeks 23-26: Backend with Ktor/FastAPI <!-- id: 18 -->
+    - [ ] Weeks 27-28: Health Guardian <!-- id: 19 -->
+    - [ ] Weeks 29-32: Secure Health Monitoring App <!-- id: 20 -->
+- [ ] Phase 4: Branding & Job Search (Weeks 33+) <!-- id: 21 -->
+    - [ ] GitHub Portfolio Polish <!-- id: 22 -->
+    - [ ] LinkedIn & Social Presence <!-- id: 23 -->
+    - [ ] Publish to Google Play <!-- id: 24 -->
+    - [ ] Personal Website <!-- id: 25 -->
+    - [ ] CV Update <!-- id: 26 -->
