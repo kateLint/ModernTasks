@@ -90,9 +90,13 @@ git clone https://github.com/YourUsername/ModernTasks.git
 
 ## 📱 Screenshots
 
-![Main task list](screenshots/main_list.png)
-![Add / Edit task](screenshots/add_task.png)
-![Empty state](screenshots/empty_state.png)
+## 📱 Screenshots
+
+<p align="center">
+  <img src="screenshots/main_list.png" width="250" alt="Home" />
+  <img src="screenshots/add_task.png" width="250" alt="Detail" />
+  <img src="screenshots/empty_state.png" width="250" alt="Empty State" />
+</p>
 
 ## 🎯 Key Learnings
 
